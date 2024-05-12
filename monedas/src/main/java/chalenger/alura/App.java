@@ -9,9 +9,16 @@ import java.util.Scanner;
 public class App 
 {
     public static Scanner scn;
+    public static int taxa=1;
+    public static Moneda usd=new Moneda( ConnectorApi.connect("USD",taxa));//dollar
+    public static Moneda brl=new Moneda( ConnectorApi.connect("BRL",taxa));;//real
+    public static Moneda cop=new Moneda( ConnectorApi.connect("COP",taxa));;//peso colombiano
+    public static Moneda ars=new Moneda( ConnectorApi.connect("ARS",taxa));;//peso argentino
 
-    public static int menu(){
-        String mensaje=
+    public static void menu(){
+        int opcion;
+        do {
+            String mensaje=
                 "1) Dolar para Peso Argentino\n"+
                 "2) Peso Argentino para Dolar\n"+
                 "3) Dolar para Reales Brasileños\n"+
@@ -21,49 +28,53 @@ public class App
                 "7)Salir";
         
         System.out.println(mensaje);
-        switch (scn.nextInt()) {
+        opcion=scn.nextInt();
+        float valor=0;
+        if(opcion!=7){
+            System.out.println("Ingrese el monto a convertir");
+            valor= scn.nextFloat();
+        }
+        
+        Moneda m;
+        switch (opcion) {
             case 1:
-                
-                return menu();
+                m=usd.converterMoneda("ARS", valor, taxa);
+                System.out.println(m);
+                break;
             case 2:
-                
-                return menu();
+                m=ars.converterMoneda("USD", valor, taxa);
+                System.out.println(m);
+                break;
             case 3:
-                
-                return menu();
+                m=usd.converterMoneda("BRL", valor, taxa);
+                System.out.println(m);
+                break;
             case 4:
-                
-                return menu();
+                m=brl.converterMoneda("USD", valor, taxa);
+                System.out.println(m);
+                break;
             case 5:
-                
-                return menu();
+                m=usd.converterMoneda("COP", valor, taxa);
+                System.out.println(m);
+                break;
             case 6:
-                
-                return menu();
+                m=cop.converterMoneda("USD", valor, taxa);
+                System.out.println(m);
+                break;
             case 7:
-                return 0;  
+                break;  
             default:
                 System.out.println("Opcion invalida");
-                return menu();
-        }
+                break;
+            }
+        } while (opcion!=7);
     }
 
     public static void main( String[] args )
     {   
         scn=new Scanner(System.in);
-        Moneda dolar;//dollar
-        Moneda brl;//real
-        Moneda col;//peso colombiano
-        Moneda ars;//peso argentino
-        /*
-         * Dolar=>Ars
-         * Ars=>Dolar
-         * Dolar=>Br
-         * Br=>Dolar
-         * Dolar=>Real
-         * Dolar=>Col
-         * Col=>Dolar
-         */
-        scn.close()
+        menu();
+        System.out.println("Fin programa");
+        scn.close();
     }
 }

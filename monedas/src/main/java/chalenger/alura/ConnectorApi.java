@@ -1,25 +1,39 @@
 package chalenger.alura;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
-import com.google.gson.Gson;
+import org.json.JSONObject;
+
 
 public class ConnectorApi {
-    public static Moneda connect(String monedaFrom, String MonedaTo){
+    public static JSONObject connect(String monedaFrom, int taxa){
+        /*
+         * monedaFrom sirve para cojer la moneda de donde viene
+         * monedaTo sirve para cojer la moneda para donde Va
+         * taxa solo sirve unicamente para caso donde este las tasas de conversion cambien
+         * podamos correjir con ese parametro
+         * 
+         */
         String url_str="https://v6.exchangerate-api.com/v6/df50fed224faf8c5af5f6bbe/latest/"+monedaFrom;
-        URL url = new URL(url_str);
-        HttpURLConnection request = (HttpURLConnection) url.openConnection();
-        request.connect();
-
-        // Convert to JSON
-        Gson gson = new Gson();
-        JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
-        JsonObject jsonobj = root.getAsJsonObject();
-
-        // Accessing object
-        String req_result = jsonobj.get("result").getAsString();
+        
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url_str))
+                        .build();
+            HttpResponse<String> response = client
+                        .send(request, HttpResponse.BodyHandlers.ofString());
+            JSONObject json = new JSONObject(response.body());
+            return json.getJSONObject(Taxas.nombres(taxa));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
